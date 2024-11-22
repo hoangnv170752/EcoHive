@@ -1,0 +1,116 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+.App {
+  background-color: black;
+}
+
+:root {
+  --primary-color: rgb(29, 155, 240);
+  --primary-color-hover: rgb(57, 176, 255);
+  --white: #ffffff;
+  --hover-background: rgb(41, 41, 41);
+  --border-color: rgb(41, 41, 41);
+}
+a {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.app-container {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.feed {
+  background-color: black;
+  color: white;
+  height: 90vh;
+  overflow: auto;
+  order: 2;
+}
+.navbar {
+  order: 3;
+  position: sticky;
+  bottom: 0px;
+}
+
+.discover {
+  display: none;
+}
+
+.profile-picture {
+  height: 50px;
+  width: 50px;
+  border-radius: 25px;
+  object-fit: cover;
+}
+
+.username {
+  color: grey;
+}
+
+@media (min-width: 768px) {
+  .app-container {
+    flex-flow: row;
+  }
+
+  .feed {
+    height: 90vh;
+    overflow: auto;
+    width: 70%;
+  }
+
+  .navbar {
+    order: 1;
+    position: sticky;
+    top: 0;
+    width: 20%;
+  }
+}
+
+@media (min-width: 900px) {
+  .feed {
+    height: 90vh;
+    overflow: auto;
+    width: 50%;
+  }
+
+  .navbar {
+    order: 1;
+    position: sticky;
+    top: 0;
+    width: 15%;
+  }
+  .discover {
+    display: flex;
+    order: 3;
+    background-color: black;
+    width: 35%;
+    padding: 0 1rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .feed {
+    height: 90vh;
+    overflow: auto;
+    width: 50%;
+  }
+
+  .navbar {
+    order: 1;
+    position: sticky;
+    top: 0;
+    width: 20%;
+  }
+  .discover {
+    display: flex;
+    order: 3;
+    background-color: black;
+    width: 30%;
+    padding: 0 1.5rem;
+  }
+}

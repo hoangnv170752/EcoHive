@@ -1,0 +1,31 @@
+.header {
+  position: sticky;
+  top: 0;
+  padding: 2rem;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  background-color: black;
+  padding-left: 4.2vw;
+  height: 10vh
+}
+.header > p {
+  display: none;
+  color: white;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.header-logo {
+  color: white;
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .header > p {
+    color: white;
+    margin-left: 15px;
+    display: inline-block;
+  }
+}
