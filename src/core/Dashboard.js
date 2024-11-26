@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import React, { useEffect, useState } from "react";
 import instagram from "../instagram.png";
 import fb from "../fb.png";
@@ -12,6 +13,7 @@ import { Link, useHistory } from "react-router-dom";
 const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
+  const [users, setUsers] = useState([]);
 
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,8 +56,37 @@ const Dashboard = () => {
     }
   };
 
+  const getUsers = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Authorization token is missing");
+      }
+
+      const response = await fetch("https://node-twitter-zrui.onrender.com/api/users", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`, // Add the Bearer token
+        },
+        redirect: "follow",
+      });
+
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.message || "Failed to fetch users");
+      }
+
+      const data = await response.json();
+      setUsers(data.users || []); // Assuming the API returns users in `data.users`
+    } catch (err) {
+      console.error("Error fetching users:", err.message);
+      setError(err.message);
+    }
+  };
+
   useEffect(() => {
-    getPosts(); // Fetch posts when the component mounts
+    getPosts();
+    getUsers();
   }, []);
 
   useEffect(() => {
@@ -203,26 +234,15 @@ const Dashboard = () => {
               Friends and Eco Partners
             </h1>
             <div>
-              <PagesAndChannels
-                checkStatus={true}
-                name="Rachana Ranade"
-                image={youtube}
-              />
-              <PagesAndChannels
-                checkStatus={true}
-                name="Rachana.ranade3"
-                image={instagram}
-              />
-              <PagesAndChannels
-                checkStatus={false}
-                name="Rachana Ranade"
-                image={fb}
-              />
-              <PagesAndChannels
-                checkStatus={true}
-                name="Rachana Ranade"
-                image={instagram}
-              />
+            {users.map((user) => (
+              <li key={user._id} className="user-item">
+                <PagesAndChannels
+                  checkStatus={user.verify === 1 ? true : false}
+                  name={user.name}
+                  image={fb}
+                />
+              </li>
+            ))}
             </div>
           </div>
         </div>
@@ -233,8 +253,8 @@ const Dashboard = () => {
             key={post._id}
           >
             <Post
-              imageUrl={post.media_urls?.[0] || "default_image_url"}
-              name={post.user_id || "Anonymous"}
+              imageUrl={post.user.avatar || "default_image_url"}
+              name={post.user.name || "Anonymous"}
               time={new Date(post.created_at).toLocaleString()}
               content={post.content}
               SMImage="default_sm_image_url"
