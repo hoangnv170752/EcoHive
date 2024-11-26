@@ -117,6 +117,7 @@ const Home = () => {
                   padding: "10px",
                   borderRadius: "12px",
                   borderStyle: "none",
+                  marginBottom: "20px",
                 }}
               />
             </div>

@@ -22,7 +22,7 @@ const Dashboard = () => {
   const history = useHistory();
   const [showAddPost, setShowAddPost] = useState(false);
 
-  const refreshPosts = () => {
+  const fetchPosts = () => {
     getPosts();
   };
 
@@ -165,12 +165,23 @@ const Dashboard = () => {
             width: "400px",
           }}
         >
-          <AddPost
+          {/* <AddPost
             token={localStorage.getItem("token")} // Pass token
-            onClose={() => setShowAddPost(false)} // Close modal onCancel
+            onClose={() => {
+              setShowAddPost(false)
+              fetchPosts()
+            }}
+          /> */}
+          <AddPost
+            token={localStorage.getItem('token')}
+            onClose={() => setShowAddPost(false)}
+            refreshPosts={fetchPosts}
           />
           <button
-            onClick={() => setShowAddPost(false)} // Close modal on click
+            onClick={() => {
+              setShowAddPost(false)
+              fetchPosts()
+            }}
             style={{
               position: "absolute",
               top: "10px",
@@ -283,19 +294,18 @@ const Dashboard = () => {
               fontWeight: "bold",
               fontSize: "1.5em",
               marginBottom: "20px",
+              fontFamily: "'Helvetica Neue', Arial, sans-serif", // Add Facebook-like font family
             }}
           >
             Friends and Eco Partners
           </h1>
           <div>
             {users.map((user) => (
-              <li key={user._id} className="user-item">
                 <PagesAndChannels
                   checkStatus={user.verify === 1 ? true : false}
                   name={user.name}
                   image={fb}
                 />
-              </li>
             ))}
           </div>
         </div>
@@ -331,6 +341,10 @@ const Dashboard = () => {
                 content={post.content}
                 SMImage="default_sm_image_url"
                 SMId={post.tag_name || "No Tag"}
+                userId={post.user._id === user._id}
+                postId={post._id}
+                post={post}
+                refreshPosts={fetchPosts}
               />
             </div>
           ))}
