@@ -42,32 +42,6 @@ const Home = () => {
     }
   };
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-
-  const handleSignup = async () => {
-    try {
-      const response = await fetch("http://localhost:5656/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, name, email, password }),
-      });
-
-      if (!response.ok) {
-        const errorResponse = await response.json();
-        throw new Error(errorResponse.message || "Signup failed");
-      }
-
-      const data = await response.json();
-      alert("Signup successful!");
-      history.push("/");
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
   const login = async () => {
     try {
       const result = await handleLogin(username, password);

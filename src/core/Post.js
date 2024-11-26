@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 const Post = (props) => {
   return (
@@ -11,6 +11,7 @@ const Post = (props) => {
         margin: "0 0 10px 0",
       }}
     >
+      {/* Header Section */}
       <div
         style={{
           display: "flex",
@@ -64,6 +65,8 @@ const Post = (props) => {
           }}
         ></i>
       </div>
+
+      {/* Content Section */}
       <div
         style={{
           display: "flex",
@@ -95,6 +98,32 @@ const Post = (props) => {
           }}
         ></i>
       </div>
+
+      {/* Media Section */}
+      <div
+        style={{
+          marginTop: "10px",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "10px",
+        }}
+      >
+        {props.mediaUrls &&
+          props.mediaUrls.map((url, index) => (
+            <img
+              key={index}
+              src={url}
+              alt={`Media ${index + 1}`}
+              style={{
+                maxWidth: "100%",
+                height: "auto",
+                borderRadius: "10px",
+              }}
+            />
+          ))}
+      </div>
+
+      {/* Footer Section */}
       <div
         style={{
           display: "flex",
@@ -112,18 +141,11 @@ const Post = (props) => {
             padding: "0 3px",
           }}
         >
-          <img
-            src={props.SMImage}
-            style={{
-              padding: "4px 4px",
-            }}
-            width="40px"
-            height="40px"
-          />
           <h3
             style={{
               fontSize: "1em",
               margin: "8px 5px 0 0",
+              padding: "4px 4px",
             }}
           >
             {props.SMId}

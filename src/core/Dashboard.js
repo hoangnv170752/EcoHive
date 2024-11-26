@@ -9,6 +9,7 @@ import PlanUsage from "./PlanUsage";
 import Post from "./Post";
 import PostCountBox from "./PostCountBox";
 import { Link, useHistory } from "react-router-dom";
+import AddPost from "./components/AddPost";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -19,6 +20,11 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const history = useHistory();
+  const [showAddPost, setShowAddPost] = useState(false);
+
+  const refreshPosts = () => {
+    getPosts();
+  };
 
   const getPosts = async (page = 1, limit = 20) => {
     try {
@@ -108,7 +114,7 @@ const Dashboard = () => {
   }, []);
   return (
     <div className="container-fluid">
-      <div className="row" style={{ paddingTop: "5px" }}>
+      <div className="row" style={{ paddingTop: "5px"}}>
         <div className="col-sm-3">
           <h3 style={{ fontWeight: "bold", color: '#008000' }}>
             Eco
@@ -126,58 +132,79 @@ const Dashboard = () => {
             padding: "0 15px",
           }}
         >
-          <i
-            className="fa fa-address-book-o"
-            aria-hidden="true"
-            style={{
-              color: "#0f52ba",
-              fontSize: "1.5em",
-              borderRadius: "200px",
-              padding: "6px 8px",
-              marginRight: "10px",
-              backgroundColor: "rgba(0,0,0,0.1)",
-            }}
-          ></i>
-          <i
-            className="fa fa-cog"
-            aria-hidden="true"
-            style={{
-              color: "#0f52ba",
-              fontSize: "1.5em",
-              borderRadius: "200px",
-              padding: "6px 8px",
-              backgroundColor: "rgba(0,0,0,0.1)",
-            }}
-          ></i>
-        </div>
-        <div className="col-sm-2" style={{ paddingLeft: "15px" }}>
-          <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRA0qxFQtZdfcfi9AasqcWO1YadB3wPXpowiQ&usqp=CAU"
-            width="40px"
-            height="40px"
-            style={{
-              borderRadius: "200px",
-              marginRight: "5px",
-              float: "left",
-            }}
+          <div>
+      {/* Add Button */}
+      <i
+        className="fa fa-plus"
+        aria-hidden="true"
+        style={{
+          color: "#0f52ba",
+          fontSize: "1.5em",
+          borderRadius: "200px",
+          padding: "6px 8px",
+          backgroundColor: "rgba(0,0,0,0.1)",
+          marginRight: "30px",
+          cursor: "pointer",
+        }}
+        onClick={() => setShowAddPost(true)} // Open modal on click
+      ></i>
+
+      {/* Modal for AddPost */}
+      {showAddPost && (
+        <div
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            zIndex: 1000,
+            backgroundColor: "white",
+            borderRadius: "10px",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+            padding: "20px",
+            width: "400px",
+          }}
+        >
+          <AddPost
+            token={localStorage.getItem("token")} // Pass token
+            onClose={() => setShowAddPost(false)} // Close modal onCancel
           />
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div>
-              <h6 style={{ color: "#999999", marginBottom: "0", float: "left" }}>
-                Profile
-              </h6>
-              <i
-                className="fa fa-angle-down"
-                aria-hidden="true"
-                style={{ marginLeft: "30px" }}
-              ></i>
-              <h4 style={{ fontWeight: "bold", fontSize: "1em", marginTop: "0" }}>
-                {user?.email}
-              </h4>
-            </div>
-            <button
+          <button
+            onClick={() => setShowAddPost(false)} // Close modal on click
+            style={{
+              position: "absolute",
+              top: "10px",
+              right: "10px",
+              backgroundColor: "transparent",
+              border: "none",
+              fontSize: "1.2em",
+              cursor: "pointer",
+            }}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* Modal Background */}
+      {showAddPost && (
+        <div
+          onClick={() => setShowAddPost(false)} // Close modal when clicking background
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 999,
+          }}
+        ></div>
+      )}
+    </div>
+          <button
               onClick={() => {
-                localStorage.clear(); // Clear user and token from localStorage
+                localStorage.clear();
                 history.push("/");
               }}
               style={{
@@ -201,6 +228,32 @@ const Dashboard = () => {
               ></i>
               Logout
             </button>
+        </div>
+        <div className="col-sm-2" style={{ paddingLeft: "15px" }}>
+          <img
+            src={user?.avatar || "default_image_url"}
+            width="40px"
+            height="40px"
+            style={{
+              borderRadius: "200px",
+              marginRight: "5px",
+              float: "left",
+            }}
+          />
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div>
+              <h6 style={{ color: "#999999", marginBottom: "0", float: "left" }}>
+                Profile
+              </h6>
+              <i
+                className="fa fa-angle-down"
+                aria-hidden="true"
+                style={{ marginLeft: "30px" }}
+              ></i>
+              <h4 style={{ fontWeight: "bold", fontSize: "1em", marginTop: "0" }}>
+                {user?.email}
+              </h4>
+            </div>
           </div>
         </div>
       </div>
@@ -209,31 +262,32 @@ const Dashboard = () => {
         style={{
           backgroundColor: "#dfebee",
           minHeight: "100vh",
+          display: "flex",
+          gap: "20px",
+          padding: "20px",
         }}
       >
         <div
           className="col-md-3"
           style={{
-            padding: "10px 30px",
+            flex: "0 0 25%", 
+            maxWidth: "25%",
+            backgroundColor: "white",
+            borderRadius: "12px",
+            padding: "20px",
+            height: "auto",
           }}
         >
-          <div
+          <h1
             style={{
-              borderRadius: "12px",
-              backgroundColor: "white",
-              padding: "20px 30px 20px 15px",
+              fontWeight: "bold",
+              fontSize: "1.5em",
+              marginBottom: "20px",
             }}
           >
-            <h1
-              style={{
-                fontWeight: "bold",
-                fontSize: "1.5em",
-                marginBottom: "20px",
-              }}
-            >
-              Friends and Eco Partners
-            </h1>
-            <div>
+            Friends and Eco Partners
+          </h1>
+          <div>
             {users.map((user) => (
               <li key={user._id} className="user-item">
                 <PagesAndChannels
@@ -243,157 +297,44 @@ const Dashboard = () => {
                 />
               </li>
             ))}
-            </div>
           </div>
         </div>
-        {posts.map((post) => (
-          <div
-            className="col-md-6"
-            style={{ padding: "10px 30px 10px 10px" }}
-            key={post._id}
-          >
-            <Post
-              imageUrl={post.user.avatar || "default_image_url"}
-              name={post.user.name || "Anonymous"}
-              time={new Date(post.created_at).toLocaleString()}
-              content={post.content}
-              SMImage="default_sm_image_url"
-              SMId={post.tag_name || "No Tag"}
-            />
-          </div>
-        ))}
-        {/* <div className="col-md-3">
-          <div
-            style={{
-              borderRadius: "10px",
-              backgroundColor: "white",
-              padding: "10px 15px",
-              margin: "10px 0 0 0",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "left",
-              }}
-            >
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRA0qxFQtZdfcfi9AasqcWO1YadB3wPXpowiQ&usqp=CAU"
-                width="50px"
-                height="50px"
-                style={{
-                  borderRadius: "200px",
-                  marginRight: "5px",
-                  float: "left",
-                }}
-              />
-              <div>
-                <h4
-                  style={{
-                    color: "darkblue",
-                    fontSize: "1.2em",
-                    fontWeight: "bold",
-                    marginBottom: "0",
-                    float: "left",
-                  }}
-                >
-                  Rachana Ranade
-                </h4>
 
-                <h6
-                  style={{
-                    fontSize: ".7em",
-                    fontWeight: "bold",
-                    marginTop: "0",
-                    color: "rgba(0,0,0,0.3)",
-                  }}
-                >
-                  2:30 PM Today
-                </h6>
-              </div>
-            </div>
+        <div
+          className="col-md-9"
+          style={{
+            flex: "1",
+            display: "flex",
+            flexDirection: "column", 
+            gap: "20px", 
+            alignItems: "center", 
+            overflowY: "auto",
+          }}
+        >
+          {posts.map((post) => (
             <div
               style={{
-                display: "flex",
-                marginTop: "10px",
-                padding: "0 3px",
-                position: "relative",
-                opacity: "0.5",
+                width: "100%",
+                maxWidth: "800px", 
+                padding: "10px",
+                boxSizing: "border-box",
+                backgroundColor: "white",
+                borderRadius: "12px",
               }}
+              key={post._id}
             >
-              <div
-                style={{
-                  float: "left",
-                  marginRight: "5px",
-                  borderRadius: "8px",
-                  backgroundColor: "#e9e9e9",
-                  padding: "0 5px",
-                }}
-              >
-                <h3
-                  style={{
-                    fontSize: ".9em",
-                    margin: "3px 5px 0 0",
-                    color: "blue",
-                    float: "left",
-                  }}
-                >
-                  Like
-                </h3>
-                <i
-                  className="fa fa-thumbs-up"
-                  aria-hidden="true"
-                  style={{
-                    fontSize: ".8em",
-                    color: "blue",
-                    marginTop: "8px",
-                  }}
-                ></i>
-              </div>
-              <div
-                style={{
-                  borderRadius: "8px",
-                  backgroundColor: "#e9e9e9",
-                  padding: "0 5px",
-                }}
-              >
-                <h3
-                  style={{
-                    fontSize: ".9em",
-                    margin: "3px 5px 0 0",
-                    color: "red",
-                    float: "left",
-                  }}
-                >
-                  Ban
-                </h3>
-                <i
-                  className="fa fa-ban"
-                  aria-hidden="true"
-                  style={{
-                    fontSize: ".8em",
-                    color: "red",
-                    marginTop: "8px",
-                  }}
-                ></i>
-              </div>
-              <button
-                className="btn btn-success"
-                style={{
-                  width: "20%",
-                  height: "auto",
-                  padding: "0",
-                  margin: "0",
-                  fontSize: ".8em",
-                  position: "absolute",
-                  right: "0",
-                }}
-              >
-                Reply
-              </button>
+              <Post
+                imageUrl={post.user.avatar || "default_image_url"}
+                name={post.user.name || "Anonymous"}
+                time={new Date(post.created_at).toLocaleString()}
+                mediaUrls={post.media_urls || []}
+                content={post.content}
+                SMImage="default_sm_image_url"
+                SMId={post.tag_name || "No Tag"}
+              />
             </div>
-          </div>
-        </div> */}
+          ))}
+        </div>
       </div>
     </div>
   );

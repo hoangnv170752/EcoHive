@@ -10,9 +10,9 @@ const HomeSignup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
-  const handleSignup = async () => {
+  const handleSignup = async (username, email, name, password) => {
     try {
-      const response = await fetch("http://localhost:5656/api/signup", {
+      const response = await fetch("https://node-twitter-zrui.onrender.com/api/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,6 +30,17 @@ const HomeSignup = () => {
       history.push("/");
     } catch (error) {
       setError(error.message);
+    }
+  };
+
+  const register = async () => {
+    try {
+      const result = await handleSignup(username, email, name, password);
+      if(result) {
+        history.push("/"); // Use history.push
+      }
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -88,7 +99,7 @@ const HomeSignup = () => {
             <LoginInput
                 labelName="Name"
                 inputType="text"
-                placeholder="Enter Username..."
+                placeholder="Enter Name..."
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 style={{
@@ -104,7 +115,7 @@ const HomeSignup = () => {
                    <LoginInput
                 labelName="Email"
                 inputType="text"
-                placeholder="Enter Username..."
+                placeholder="Enter Email..."
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 style={{
@@ -141,7 +152,7 @@ const HomeSignup = () => {
             )}
 
             <button
-              onClick={() => {}}
+              onClick={register}
               style={{
                 borderRadius: "12px",
                 backgroundColor: "#008000",
