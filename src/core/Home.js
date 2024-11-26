@@ -9,8 +9,7 @@ const Home = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const navigate = useHistory();
-
+  const history = useHistory();
   // Handle login API call
   const handleLogin = async (email, password) => {
     try {
@@ -21,7 +20,7 @@ const Home = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }), // Ensure request body matches the required structure
+          body: JSON.stringify({ email, password }),
         }
       );
   
@@ -31,11 +30,8 @@ const Home = () => {
       }
   
       const data = await response.json();
-  
-      // Save token to local storage
       localStorage.setItem("token", data.token);
   
-      // Optional: Save user info
       localStorage.setItem("user", JSON.stringify(data.user));
   
       console.log("Login successful:", data);
@@ -46,13 +42,12 @@ const Home = () => {
     }
   };
 
-  // Handle login button click
   const login = async () => {
     try {
-      // const result = await handleLogin(username, password);
-      alert("Login successful!", username, password);
-      // Navigate to the dashboard after successful login
-      navigate("/user/dashboard");
+      const result = await handleLogin(username, password);
+      if(result) {
+        history.push("/user/dashboard"); // Use history.push
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -62,9 +57,9 @@ const Home = () => {
     <div className="container-fluid">
       <div className="row" style={{ minHeight: "100vh" }}>
         <div className="col-md-5">
-          <h3 style={{ fontWeight: "bold" }}>
+          <h3 style={{ fontWeight: "bold", color: '#008000' }}>
             Eco
-            <span style={{ color: "#0f52ba" }}>Hive</span>.
+            <span style={{ color: "#f9c901" }}>Hive</span>.
           </h3>
 
           <div
@@ -79,7 +74,7 @@ const Home = () => {
                 fontSize: "2.5em",
               }}
             >
-              Hey there 👋
+              Hey Eco Lovers 🌎
             </h1>
             <h6
               style={{
@@ -88,8 +83,8 @@ const Home = () => {
                 marginBottom: "50px",
               }}
             >
-              Welcome back to <span style={{ fontWeight: "bold" }}>Eco</span>
-              <span style={{ color: "#0f52ba" }}>Hive</span>.
+              Welcome back to <span style={{ fontWeight: "bold", color: '#008000' }}>Eco</span>
+              <span style={{ color: "#f9c901" }}>Hive</span>.
             </h6>
 
             <div>
@@ -136,7 +131,7 @@ const Home = () => {
               onClick={login}
               style={{
                 borderRadius: "12px",
-                backgroundColor: "#fa002f",
+                backgroundColor: "#008000",
                 width: "55%",
                 color: "#dfebee",
                 margin: "10px 0",
@@ -160,40 +155,42 @@ const Home = () => {
                 New User? <span style={{ color: "blue" }}>Signup instead</span>
               </Link>
             </h6>
-
-            <p
-              style={{
-                color: "rgba(0, 0, 0, 0.7)",
-                fontWeight: "400",
-                marginTop: "20px",
-              }}
-            >
-              Or continue with
-            </p>
-
-            <ConnectPhotos imageUrl="data:image/png;base64,..." />
-            <ConnectPhotos imageUrl="data:image/png;base64,..." />
           </div>
         </div>
-        <div className="col-md-7" style={{ backgroundColor: "#0f52ba" }}>
-          <div className="text-center">
-            <img src={homePagePhoto} style={{ marginTop: "100px" }} />
-            <Features
-              iconName="fa fa-comment"
-              feature="Fully Automated Comment Moderation"
-            />
-            <Features
-              iconName="fa fa-refresh"
-              feature="Take a backseat while we automate your repo"
-            />
-            <Features
-              iconName="fa fa-dollar"
-              feature="Start with a free trial"
-            />
-            <Features
-              iconName="fa fa-thumbs-up"
-              feature="Best SAAS in the industry"
-            />
+        <div
+          className="col-md-7"
+          style={{
+            backgroundColor: "#0f52ba",
+            height: "100vh",
+            padding: "0", 
+          }}
+        >
+          <div
+            className="video-container"
+            style={{
+              position: "relative",
+              width: "100%",
+              height: "100%",
+              overflow: "hidden",
+            }}
+          >
+            <video
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                transform: "translate(-50%, -50%)",
+              }}
+              autoPlay
+              muted
+              loop
+            >
+              <source src={`/env.mp4`} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
           </div>
         </div>
       </div>

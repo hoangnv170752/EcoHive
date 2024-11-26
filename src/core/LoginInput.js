@@ -1,14 +1,19 @@
 import React from "react";
-const LoginInput = (props) => {
+
+const LoginInput = ({ labelName, inputType, placeholder, style, value, onChange }) => {
   return (
     <>
-      <label style={{ float: "left", marginBottom: "0", color: "#999999" }}>
-        {props.labelName}
-      </label>
+      {labelName && (
+        <label style={{ float: "left", marginBottom: "0", color: "#999999" }}>
+          {labelName}
+        </label>
+      )}
       <input
-        type={props.inputType}
-        placeholder={props.placeholder}
-        style={props.style}
+        type={inputType}
+        placeholder={placeholder}
+        style={style}
+        value={value} // Bind the value prop
+        onChange={onChange} // Bind the onChange prop
       />
     </>
   );
