@@ -1,47 +1,12 @@
 import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
-import homePagePhoto from "../homePagePhoto.png";
-import ConnectPhotos from "./ConnectPhotos";
-import Features from "./Features";
 import LoginInput from "./LoginInput";
 
-const Home = () => {
+const HomeSignup = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const history = useHistory();
-  // Handle login API call
-  const handleLogin = async (email, password) => {
-    try {
-      const response = await fetch(
-        "https://node-twitter-zrui.onrender.com/api/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      );
-  
-      if (!response.ok) {
-        const errorResponse = await response.json();
-        throw new Error(errorResponse.errors[0] || "Login failed");
-      }
-  
-      const data = await response.json();
-      localStorage.setItem("token", data.token);
-  
-      localStorage.setItem("user", JSON.stringify(data.user));
-  
-      console.log("Login successful:", data);
-      return data;
-    } catch (error) {
-      console.error("Error during login:", error.message);
-      throw error;
-    }
-  };
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
@@ -68,16 +33,6 @@ const Home = () => {
     }
   };
 
-  const login = async () => {
-    try {
-      const result = await handleLogin(username, password);
-      if(result) {
-        history.push("/user/dashboard"); // Use history.push
-      }
-    } catch (err) {
-      setError(err.message);
-    }
-  };
 
   return (
     <div className="container-fluid">
@@ -130,6 +85,38 @@ const Home = () => {
                   marginBottom: "20px",
                 }}
               />
+            <LoginInput
+                labelName="Name"
+                inputType="text"
+                placeholder="Enter Username..."
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                style={{
+                  width: "100%",
+                  height: "40px",
+                  backgroundColor: "#dfebee",
+                  padding: "10px",
+                  borderRadius: "12px",
+                  borderStyle: "none",
+                  marginBottom: "20px",
+                }}
+              />
+                   <LoginInput
+                labelName="Email"
+                inputType="text"
+                placeholder="Enter Username..."
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={{
+                  width: "100%",
+                  height: "40px",
+                  backgroundColor: "#dfebee",
+                  padding: "10px",
+                  borderRadius: "12px",
+                  borderStyle: "none",
+                  marginBottom: "20px",
+                }}
+              />
               <LoginInput
                 labelName="Password"
                 inputType="password"
@@ -154,7 +141,7 @@ const Home = () => {
             )}
 
             <button
-              onClick={login}
+              onClick={() => {}}
               style={{
                 borderRadius: "12px",
                 backgroundColor: "#008000",
@@ -166,19 +153,19 @@ const Home = () => {
               }}
               className="btn"
             >
-              Sign In
+              Sign Up
             </button>
 
             <h6>
               <Link
-                to="/signup"
+                to="/"
                 style={{
                   textDecoration: "none",
                   color: "#999999",
                   fontSize: ".9em",
                 }}
               >
-                New User? <span style={{ color: "blue" }}>Signup instead</span>
+                Already been there? <span style={{ color: "blue" }}>SignIn instead</span>
               </Link>
             </h6>
           </div>
@@ -224,4 +211,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomeSignup;
