@@ -1,13 +1,8 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useEffect, useState } from "react";
-import instagram from "../instagram.png";
 import fb from "../fb.png";
-import youtube from "../youtube.png";
 import PagesAndChannels from "./PagesAndChannels";
-import Status from "./Status";
-import PlanUsage from "./PlanUsage";
 import Post from "./Post";
-import PostCountBox from "./PostCountBox";
 import { Link, useHistory } from "react-router-dom";
 import AddPost from "./components/AddPost";
 

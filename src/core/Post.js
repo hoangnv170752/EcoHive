@@ -116,50 +116,67 @@ const Post = (props) => {
       )}
 
       {showModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            zIndex: 1000,
-            backgroundColor: "white",
-            borderRadius: "10px",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-            padding: "20px",
-            width: "400px",
-          }}
-        >
-          <h3>Are you sure you want to delete this post?</h3>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
-            <button
-              style={{
-                backgroundColor: "#ccc",
-                border: "none",
-                padding: "10px 15px",
-                marginRight: "10px",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-              onClick={() => setShowModal(false)}
-            >
-              Cancel
-            </button>
-            <button
-              style={{
-                backgroundColor: "#fa002f",
-                color: "white",
-                border: "none",
-                padding: "10px 15px",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-              onClick={deletePost}
-            >
-              Yes
-            </button>
+        <>
+          {/* Background Overlay */}
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+              zIndex: 999, // Layer behind the modal
+            }}
+            onClick={() => setShowModal(false)} // Close modal when clicking on overlay
+          ></div>
+
+          {/* Modal */}
+          <div
+            style={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              zIndex: 1000, // Layer above the overlay
+              backgroundColor: "white",
+              borderRadius: "10px",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+              padding: "20px",
+              width: "400px",
+            }}
+          >
+            <h3>Are you sure you want to delete this post?</h3>
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
+              <button
+                style={{
+                  backgroundColor: "#ccc",
+                  border: "none",
+                  padding: "10px 15px",
+                  marginRight: "10px",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+                onClick={() => setShowModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                style={{
+                  backgroundColor: "#fa002f",
+                  color: "white",
+                  border: "none",
+                  padding: "10px 15px",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+                onClick={deletePost}
+              >
+                Yes
+              </button>
+            </div>
           </div>
-        </div>
+        </>
       )}
       </div>
 
