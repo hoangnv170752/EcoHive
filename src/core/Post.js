@@ -63,7 +63,7 @@ const Post = (props) => {
         }}
       >
         <img
-          src={props.imageUrl}
+          src={props.imageUrl !== 'default_image_url' ? props.imageUrl : 'https://static.vecteezy.com/system/resources/previews/020/662/332/non_2x/earth-icon-logo-illustration-vector.jpg'}
           width="50px"
           height="50px"
           style={{
@@ -307,7 +307,7 @@ const Post = (props) => {
             right: "0",
           }}
         >
-          <button
+          {props.userId && <button
             className="fa fa-pencil fa-lg"
             aria-hidden="true"
             style={{
@@ -321,7 +321,7 @@ const Post = (props) => {
               backgroundColor: "rgba(0,0,0,0.1)",
             }}
             onClick={openEditModal}
-          ></button>
+          ></button>}
         </div>
       </div>
     </div>

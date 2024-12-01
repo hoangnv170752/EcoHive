@@ -90,23 +90,89 @@ const Dashboard = () => {
     getUsers();
   }, []);
 
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [userData, setUserData] = useState({
+    name: user?.name || "",
+    date_of_birth: user?.date_of_birth || "",
+    email: user?.email || "",
+    username: user?.username || "",
+    bio: user?.bio || "",
+    location: user?.location || "",
+    website: user?.website || "",
+  });
+
   useEffect(() => {
     // Get token and user from localStorage
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
-
+  
     if (storedToken) {
       setToken(storedToken);
     }
-
+  
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser)); // Parse the user JSON string
+        const parsedUser = JSON.parse(storedUser); // Parse the user JSON string
+        console.log("Parsed user data:", parsedUser);
+        setUser(parsedUser); // Set user state
+        setUserData({
+          name: parsedUser.name || "",
+          date_of_birth: parsedUser.date_of_birth || "",
+          email: parsedUser.email || "",
+          username: parsedUser.username || "",
+          bio: parsedUser.bio || "",
+          location: parsedUser.location || "",
+          website: parsedUser.website || "",
+        });
       } catch (error) {
         console.error("Error parsing user data:", error.message);
       }
     }
   }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUserData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  console.log("User data:", localStorage.getItem('user'));
+
+  const handleUpdateUser = async () => {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Authorization", `Bearer ${localStorage.getItem("token")}`);
+  
+    const requestOptions = {
+      method: "PUT",
+      headers: myHeaders,
+      body: JSON.stringify(userData),
+      redirect: "follow",
+    };
+  
+    try {
+      const response = await fetch(
+        `https://node-twitter-zrui.onrender.com/api/user/${user._id}`,
+        requestOptions
+      );
+  
+      if (!response.ok) {
+        throw new Error("Failed to update user");
+      }
+  
+      const result = await response.json();
+      console.log("User updated:", result);
+  
+      localStorage.removeItem("user");
+      localStorage.setItem("user", JSON.stringify(result?.user));
+      setUser(result);
+      alert("User updated successfully!");
+
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating user:", error);
+      alert("Failed to update user. Please try again.");
+    }
+  };
   return (
     <div className="container-fluid">
       <div className="row" style={{ paddingTop: "5px"}}>
@@ -256,12 +322,107 @@ const Dashboard = () => {
                 aria-hidden="true"
                 style={{ marginLeft: "30px" }}
               ></i>
-              <h4 style={{ fontWeight: "bold", fontSize: "1em", marginTop: "0" }}>
+              <h4 style={{ fontWeight: "bold", fontSize: "1em", marginTop: "0" }} onClick={() => setShowUpdateModal(true)}>
                 {user?.email}
               </h4>
             </div>
           </div>
         </div>
+
+        {showUpdateModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            zIndex: 1000,
+            backgroundColor: "white",
+            borderRadius: "10px",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+            padding: "20px",
+            width: "400px",
+          }}
+        >
+          <h3 style={{ textAlign: "center" }}>Update your Ecofo</h3>
+          <div style={{ marginBottom: "10px" }}>
+            <label>Name</label>
+            <input
+              type="text"
+              name="name"
+              value={userData.name}
+              onChange={handleInputChange}
+              style={{ width: "100%", padding: "5px", marginBottom: "10px" }}
+            />
+            <label>Date of Birth</label>
+            <input
+              type="date"
+              name="date_of_birth"
+              value={userData.date_of_birth}
+              onChange={handleInputChange}
+              style={{ width: "100%", padding: "5px", marginBottom: "10px" }}
+            />
+            <label>Username</label>
+            <input
+              type="text"
+              name="username"
+              value={userData.username}
+              onChange={handleInputChange}
+              style={{ width: "100%", padding: "5px", marginBottom: "10px" }}
+            />
+            <label>Bio</label>
+            <textarea
+              name="bio"
+              value={userData.bio}
+              onChange={handleInputChange}
+              style={{ width: "100%", padding: "5px", marginBottom: "10px" }}
+            />
+          </div>
+          <button
+            onClick={handleUpdateUser}
+            style={{
+              backgroundColor: "#0f52ba",
+              color: "white",
+              padding: "10px 20px",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+              width: "100%",
+            }}
+          >
+            Update
+          </button>
+          <button
+            onClick={() => setShowUpdateModal(false)}
+            style={{
+              marginTop: "10px",
+              backgroundColor: "transparent",
+              border: "none",
+              fontSize: "1.2em",
+              cursor: "pointer",
+              display: "block",
+              width: "100%",
+              color: "#999",
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+      {showUpdateModal && (
+        <div
+          onClick={() => setShowUpdateModal(false)} 
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 999,
+          }}
+        ></div>
+      )}
       </div>
       <div
         className="row"
