@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useEffect, useState } from "react";
 import fb from "../fb.png";
+import earth from "../assets/icon.png"
 import PagesAndChannels from "./PagesAndChannels";
 import Post from "./Post";
 import AddPost from "./components/AddPost";
@@ -404,7 +405,7 @@ const Dashboard = () => {
           <h1 style={{ fontWeight: "bold", fontSize: "1.5em", marginBottom: "20px" }}>Friends and Eco Partners</h1>
           <div>
             {users.map((user) => (
-              <PagesAndChannels key={user._id} checkStatus={user.verify === 1} name={user.name} image={fb} />
+              <PagesAndChannels key={user._id} checkStatus={user.verify === 1} name={user.name} image={earth} />
             ))}
           </div>
         </div>
