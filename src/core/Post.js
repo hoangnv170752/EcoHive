@@ -1,11 +1,24 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useState } from "react";
 import AddPost from "./components/AddPost";
+import { useLocalStorage } from "@rehooks/local-storage";
+import DonationModal from "./components/DonationModal";
 const Post = (props) => {
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState(null);
-
+  const [open, setOpen] = useState(false);
+  const [donationAmount, setDonationAmount] = useState("");
+  const [anonymous, setAnonymous] = useState(false);
+  const [tabIndex, setTabIndex] = useState(0);
+  const [projectDetail, setProjectDetail] = useState({}); // Địa chỉ ví người nhận
+  const [isProjectEnded, setIsProjectEnded] = useState(false);
+  const [exchangeRate, setExchangeRate] = useLocalStorage(
+    "exchangeRateAlgoToVND",
+    0
+  );
+  const handleCloseModal = () => setOpen(false);
+  const handleAnonymousChange = (e) => setAnonymous(e.target.checked);
   const deletePost = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -50,6 +63,7 @@ const Post = (props) => {
   };
 
   return (
+   <>
     <div
       style={{
         borderRadius: "10px",
@@ -243,6 +257,7 @@ const Post = (props) => {
           backgroundColor: "#f9f9f9",
           borderRadius: "10px",
         }}
+        onClick={() => setOpen(true)}
       >
         <h4 style={{ margin: "0 0 10px 0", color: "darkblue" }}>
           Pera Wallet Address:
@@ -346,6 +361,22 @@ const Post = (props) => {
         </div>
       </div>
     </div>
+
+    <DonationModal
+      handleClose={() => setOpen(false)}
+      exchangeRate={exchangeRate}
+      walletAddress={props.event_id}
+      open={open}
+      handleCloseModal={handleCloseModal}
+      donationAmount={donationAmount}
+      setDonationAmount={setDonationAmount}
+      anonymous={anonymous}
+      handleAnonymousChange={handleAnonymousChange}
+      projectName={props.post.title || "default"}
+      projectId={props.postId}
+      setProjectDetail={setProjectDetail}
+    />
+    </>
   );
 };
 

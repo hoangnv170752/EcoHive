@@ -497,7 +497,7 @@ const Dashboard = () => {
                 content={post.content}
                 SMImage="default_sm_image_url"
                 SMId={post.tag_name || "No Tag"}
-                event_id={post.event_id || "No Event"}
+                event_id={post.event_id || "No Wallet Attached"}
                 userId={post.user._id === user._id}
                 postId={post._id}
                 post={post}
