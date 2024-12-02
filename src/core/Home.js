@@ -89,7 +89,7 @@ const Home = () => {
 
             <div>
               <LoginInput
-                labelName="Username"
+                labelName="Email"
                 inputType="text"
                 placeholder="Enter Username..."
                 value={username}
