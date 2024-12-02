@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { QRCodeCanvas } from "qrcode.react";
+import { PeraWalletConnect } from "@perawallet/connect";
+
+const peraWallet = new PeraWalletConnect();
 
 const DonationModal = ({
   open,
@@ -10,6 +13,8 @@ const DonationModal = ({
 }) => {
   const [donationAmount, setDonationAmount] = useState(0);
   const [usdEquivalent, setUsdEquivalent] = useState("");
+  const [walletConnected, setWalletConnected] = useState(false);
+  const [userAddress, setUserAddress] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
@@ -28,6 +33,35 @@ const DonationModal = ({
       setUsdEquivalent((vndAmount / exchangeRate).toFixed(6));
     } else {
       setUsdEquivalent("");
+    }
+  };
+
+  const connectWallet = async () => {
+    try {
+      const accounts = await peraWallet.connect();
+      peraWallet.connector?.on("disconnect", handleDisconnectWallet);
+      setUserAddress(accounts[0]);
+      setWalletConnected(true);
+      alert(`Wallet connected: ${accounts[0]}`);
+    } catch (error) {
+      console.error("Error connecting to Pera Wallet:", error);
+      alert("Failed to connect to wallet. Please try again.");
+    }
+  };
+
+  const handleDisconnectWallet = () => {
+    peraWallet.disconnect();
+    setWalletConnected(false);
+    setUserAddress(null);
+  };
+
+  const handleDonate = async () => {
+    if (!walletConnected) {
+      await connectWallet();
+    }
+    if (walletConnected && userAddress) {
+      alert(`Initiating donation of ${usdEquivalent} ALGO from ${userAddress}`);
+      // Here, you can add logic to process the transaction using the connected wallet.
     }
   };
 
@@ -181,6 +215,7 @@ const DonationModal = ({
                 Cancel
               </button>
               <button
+                onClick={handleDonate}
                 style={{
                   padding: "10px 20px",
                   borderRadius: "8px",
@@ -196,7 +231,7 @@ const DonationModal = ({
                 }
                 onMouseOut={(e) => (e.target.style.backgroundColor = "#0f52ba")}
               >
-                Donate
+                {walletConnected ? "Proceed to Donate" : "Connect Wallet"}
               </button>
             </div>
           </div>
