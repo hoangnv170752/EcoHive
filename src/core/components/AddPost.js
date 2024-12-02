@@ -13,11 +13,11 @@ const AddPost = ({ token, onClose, refreshPosts, formData = null }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const isEditMode = !!formData; // Determine if it's edit mode based on provided formData
+  const isEditMode = !!formData;
 
   useEffect(() => {
     if (formData) {
-      setData(formData); // Pre-fill form with data when editing
+      setData(formData);
     }
   }, [formData]);
 
@@ -41,11 +41,18 @@ const AddPost = ({ token, onClose, refreshPosts, formData = null }) => {
     setError("");
     setSuccessMessage("");
 
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("Authentication token is missing. Please log in.");
+      setLoading(false);
+      return;
+    }
+
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Authorization", `Bearer ${token}`);
 
-    const endpoint = isEditMode
+    const endpoint = isEditMode && formData.postId
       ? `https://node-twitter-zrui.onrender.com/api/post/${formData.postId}`
       : "https://node-twitter-zrui.onrender.com/api/post";
 
@@ -62,18 +69,24 @@ const AddPost = ({ token, onClose, refreshPosts, formData = null }) => {
       const response = await fetch(endpoint, requestOptions);
 
       if (!response.ok) {
-        const errorResponse = await response.json();
-        throw new Error(errorResponse.message || "Failed to save post");
+        let errorMessage = "Failed to save post";
+        try {
+          const errorResponse = await response.json();
+          errorMessage = errorResponse.message || errorMessage;
+        } catch (jsonError) {
+          console.error("Error parsing JSON:", jsonError);
+        }
+        throw new Error(errorMessage);
       }
 
       setSuccessMessage(
         isEditMode ? "Post updated successfully!" : "Post created successfully!"
       );
-      refreshPosts(); // Refresh posts after submission
-      onClose(); // Close the modal
+      onClose();
+      window.location.reload();
     } catch (err) {
       console.error("Error:", err);
-      setError("Failed to save post. Please try again.");
+      setError(err.message || "Failed to save post. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -81,7 +94,6 @@ const AddPost = ({ token, onClose, refreshPosts, formData = null }) => {
 
   return (
     <div>
-      {/* Modal */}
       <div
         style={{
           position: "fixed",
@@ -178,6 +190,21 @@ const AddPost = ({ token, onClose, refreshPosts, formData = null }) => {
           }}
         />
 
+        <input
+          type="text"
+          name="event_id"
+          value={data.event_id}
+          placeholder="Wallet Address (Event ID)"
+          onChange={handleInputChange}
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "10px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+          }}
+        />
+
         <label>
           <input
             type="checkbox"
@@ -217,7 +244,6 @@ const AddPost = ({ token, onClose, refreshPosts, formData = null }) => {
         </div>
       </div>
 
-      {/* Modal Background */}
       <div
         onClick={onClose}
         style={{

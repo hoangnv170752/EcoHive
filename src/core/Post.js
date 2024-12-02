@@ -13,13 +13,16 @@ const Post = (props) => {
         throw new Error("Authorization token is missing");
       }
 
-      const response = await fetch(`https://node-twitter-zrui.onrender.com/api/post/${props.postId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        redirect: "follow",
-      });
+      const response = await fetch(
+        `https://node-twitter-zrui.onrender.com/api/post/${props.postId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          redirect: "follow",
+        }
+      );
 
       if (!response.ok) {
         const errorResponse = await response.json();
@@ -41,6 +44,7 @@ const Post = (props) => {
       content: props.content,
       media_urls: props.mediaUrls,
       tag_name: props.SMId,
+      event_id: props.event_id,
     });
     setShowEditModal(true);
   };
@@ -63,7 +67,11 @@ const Post = (props) => {
         }}
       >
         <img
-          src={props.imageUrl !== 'default_image_url' ? props.imageUrl : 'https://static.vecteezy.com/system/resources/previews/020/662/332/non_2x/earth-icon-logo-illustration-vector.jpg'}
+          src={
+            props.imageUrl !== "default_image_url"
+              ? props.imageUrl
+              : "https://static.vecteezy.com/system/resources/previews/020/662/332/non_2x/earth-icon-logo-illustration-vector.jpg"
+          }
           width="50px"
           height="50px"
           style={{
@@ -72,10 +80,12 @@ const Post = (props) => {
             float: "left",
           }}
         />
-        <div style={{
-          display: "flex",
-          flexDirection: "column",
-        }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
           <h4
             style={{
               color: "darkblue",
@@ -100,84 +110,90 @@ const Post = (props) => {
           </h6>
         </div>
         {props.userId && (
-        <i
-          className="fa fa-trash"
-          aria-hidden="true"
-          style={{
-            padding: "4px 4px",
-            color: "#fa002f",
-            position: "absolute",
-            right: "5px",
-            fontSize: "1.5em",
-            cursor: "pointer",
-          }}
-          onClick={() => setShowModal(true)}
-        ></i>
-      )}
-
-      {showModal && (
-        <>
-          {/* Background Overlay */}
-          <div
+          <i
+            className="fa fa-trash"
+            aria-hidden="true"
             style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
-              zIndex: 999, // Layer behind the modal
+              padding: "4px 4px",
+              color: "#fa002f",
+              position: "absolute",
+              right: "5px",
+              fontSize: "1.5em",
+              cursor: "pointer",
             }}
-            onClick={() => setShowModal(false)} // Close modal when clicking on overlay
-          ></div>
+            onClick={() => setShowModal(true)}
+          ></i>
+        )}
 
-          {/* Modal */}
-          <div
-            style={{
-              position: "fixed",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              zIndex: 1000, // Layer above the overlay
-              backgroundColor: "white",
-              borderRadius: "10px",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-              padding: "20px",
-              width: "400px",
-            }}
-          >
-            <h3>Are you sure you want to delete this post?</h3>
-            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
-              <button
+        {showModal && (
+          <>
+            {/* Background Overlay */}
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                zIndex: 999,
+              }}
+              onClick={() => setShowModal(false)}
+            ></div>
+
+            {/* Modal */}
+            <div
+              style={{
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                zIndex: 1000,
+                backgroundColor: "white",
+                borderRadius: "10px",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                padding: "20px",
+                width: "400px",
+              }}
+            >
+              <h3>Are you sure you want to delete this post?</h3>
+              <div
                 style={{
-                  backgroundColor: "#ccc",
-                  border: "none",
-                  padding: "10px 15px",
-                  marginRight: "10px",
-                  borderRadius: "5px",
-                  cursor: "pointer",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  marginTop: "20px",
                 }}
-                onClick={() => setShowModal(false)}
               >
-                Cancel
-              </button>
-              <button
-                style={{
-                  backgroundColor: "#fa002f",
-                  color: "white",
-                  border: "none",
-                  padding: "10px 15px",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-                onClick={deletePost}
-              >
-                Yes
-              </button>
+                <button
+                  style={{
+                    backgroundColor: "#ccc",
+                    border: "none",
+                    padding: "10px 15px",
+                    marginRight: "10px",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  style={{
+                    backgroundColor: "#fa002f",
+                    color: "white",
+                    border: "none",
+                    padding: "10px 15px",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                  onClick={deletePost}
+                >
+                  Yes
+                </button>
+              </div>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
       </div>
 
       {/* Content Section */}
@@ -206,7 +222,7 @@ const Post = (props) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  color: "#007BFF", // Highlight color for URL
+                  color: "#007BFF",
                   textDecoration: "underline",
                 }}
               >
@@ -217,17 +233,23 @@ const Post = (props) => {
             )
           )}
         </h5>
-        <i
-          className="fa fa-angle-right"
-          aria-hidden="true"
-          style={{
-            padding: "4px 4px",
-            color: "rgba(0,0,0,0.5)",
-            position: "absolute",
-            right: "5px",
-            fontSize: "1.5em",
-          }}
-        ></i>
+      </div>
+
+      {/* Wallet Address and QR Code Section */}
+      <div
+        style={{
+          marginTop: "10px",
+          padding: "10px",
+          backgroundColor: "#f9f9f9",
+          borderRadius: "10px",
+        }}
+      >
+        <h4 style={{ margin: "0 0 10px 0", color: "darkblue" }}>
+          Pera Wallet Address:
+        </h4>
+        <p style={{ wordBreak: "break-all", marginBottom: "10px" }}>
+          {props.event_id || "No wallet address provided."}
+        </p>
       </div>
 
       {/* Edit Modal */}
@@ -261,7 +283,6 @@ const Post = (props) => {
             <img
               key={index}
               src={url}
-              alt={`Media ${index + 1}`}
               style={{
                 maxWidth: "100%",
                 height: "auto",
