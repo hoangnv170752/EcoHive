@@ -3,43 +3,31 @@ import React, { useEffect, useState } from "react";
 import fb from "../fb.png";
 import PagesAndChannels from "./PagesAndChannels";
 import Post from "./Post";
-import { Link, useHistory } from "react-router-dom";
 import AddPost from "./components/AddPost";
+import { useHistory } from "react-router-dom";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [users, setUsers] = useState([]);
-
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const history = useHistory();
   const [showAddPost, setShowAddPost] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [userData, setUserData] = useState({});
+  const history = useHistory();
 
-  const fetchPosts = () => {
-    getPosts();
-  };
-
-  const getPosts = async (page = 1, limit = 20) => {
+  const fetchPosts = async (page = 1, limit = 20) => {
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("User is not authenticated");
-      }
-
-      const myHeaders = new Headers();
-      myHeaders.append("Authorization", `Bearer ${token}`);
-
-      const requestOptions = {
-        method: "GET",
-        headers: myHeaders,
-        redirect: "follow",
-      };
+      if (!token) throw new Error("User is not authenticated");
 
       const response = await fetch(
         `https://node-twitter-zrui.onrender.com/api/allPosts?page=${page}&limit=${limit}`,
-        requestOptions
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
       if (!response.ok) {
@@ -48,8 +36,7 @@ const Dashboard = () => {
       }
 
       const data = await response.json();
-      console.log(data);
-      setPosts(data.posts);
+      setPosts(data.posts || []);
       setLoading(false);
     } catch (err) {
       setError(err.message);
@@ -57,19 +44,13 @@ const Dashboard = () => {
     }
   };
 
-  const getUsers = async () => {
+  const fetchUsers = async () => {
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Authorization token is missing");
-      }
+      if (!token) throw new Error("Authorization token is missing");
 
       const response = await fetch("https://node-twitter-zrui.onrender.com/api/users", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`, // Add the Bearer token
-        },
-        redirect: "follow",
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) {
@@ -78,43 +59,25 @@ const Dashboard = () => {
       }
 
       const data = await response.json();
-      setUsers(data.users || []); // Assuming the API returns users in `data.users`
+      setUsers(data.users || []);
     } catch (err) {
-      console.error("Error fetching users:", err.message);
       setError(err.message);
     }
   };
 
   useEffect(() => {
-    getPosts();
-    getUsers();
-  }, []);
+    fetchPosts();
+    fetchUsers();
 
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [userData, setUserData] = useState({
-    name: user?.name || "",
-    date_of_birth: user?.date_of_birth || "",
-    email: user?.email || "",
-    username: user?.username || "",
-    bio: user?.bio || "",
-    location: user?.location || "",
-    website: user?.website || "",
-  });
-
-  useEffect(() => {
-    // Get token and user from localStorage
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
-  
-    if (storedToken) {
-      setToken(storedToken);
-    }
-  
+
+    if (storedToken) setToken(storedToken);
+
     if (storedUser) {
       try {
-        const parsedUser = JSON.parse(storedUser); // Parse the user JSON string
-        console.log("Parsed user data:", parsedUser);
-        setUser(parsedUser); // Set user state
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
         setUserData({
           name: parsedUser.name || "",
           date_of_birth: parsedUser.date_of_birth || "",
@@ -124,8 +87,8 @@ const Dashboard = () => {
           location: parsedUser.location || "",
           website: parsedUser.website || "",
         });
-      } catch (error) {
-        console.error("Error parsing user data:", error.message);
+      } catch (err) {
+        console.error("Error parsing user data:", err.message);
       }
     }
   }, []);
@@ -135,44 +98,38 @@ const Dashboard = () => {
     setUserData((prev) => ({ ...prev, [name]: value }));
   };
 
-  console.log("User data:", localStorage.getItem('user'));
-
   const handleUpdateUser = async () => {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("Authorization", `Bearer ${localStorage.getItem("token")}`);
-  
-    const requestOptions = {
-      method: "PUT",
-      headers: myHeaders,
-      body: JSON.stringify(userData),
-      redirect: "follow",
-    };
-  
     try {
       const response = await fetch(
         `https://node-twitter-zrui.onrender.com/api/user/${user._id}`,
-        requestOptions
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(userData),
+        }
       );
-  
-      if (!response.ok) {
-        throw new Error("Failed to update user");
-      }
-  
-      const result = await response.json();
-      console.log("User updated:", result);
-  
-      localStorage.removeItem("user");
-      localStorage.setItem("user", JSON.stringify(result?.user));
-      setUser(result);
-      alert("User updated successfully!");
 
+      if (!response.ok) throw new Error("Failed to update user");
+
+      const result = await response.json();
+      localStorage.setItem("user", JSON.stringify(result.user));
+      setUser(result.user);
+      alert("User updated successfully!");
       window.location.reload();
     } catch (error) {
       console.error("Error updating user:", error);
       alert("Failed to update user. Please try again.");
     }
   };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    history.push("/");
+  };
+
   return (
     <div className="container-fluid">
       <div className="row" style={{ paddingTop: "5px"}}>
@@ -435,33 +392,19 @@ const Dashboard = () => {
         }}
       >
         <div
-          className="col-md-3"
+          className="col-md-3 friends-and-eco-partners"
           style={{
-            flex: "0 0 25%", 
-            maxWidth: "25%",
+            display: window.innerWidth <= 768 ? "none" : "block", // Hide on smaller screens
             backgroundColor: "white",
             borderRadius: "12px",
             padding: "20px",
             height: "auto",
           }}
         >
-          <h1
-            style={{
-              fontWeight: "bold",
-              fontSize: "1.5em",
-              marginBottom: "20px",
-              fontFamily: "'Helvetica Neue', Arial, sans-serif", // Add Facebook-like font family
-            }}
-          >
-            Friends and Eco Partners
-          </h1>
+          <h1 style={{ fontWeight: "bold", fontSize: "1.5em", marginBottom: "20px" }}>Friends and Eco Partners</h1>
           <div>
             {users.map((user) => (
-                <PagesAndChannels
-                  checkStatus={user.verify === 1 ? true : false}
-                  name={user.name}
-                  image={fb}
-                />
+              <PagesAndChannels key={user._id} checkStatus={user.verify === 1} name={user.name} image={fb} />
             ))}
           </div>
         </div>
@@ -495,10 +438,9 @@ const Dashboard = () => {
                 time={new Date(post.created_at).toLocaleString()}
                 mediaUrls={post.media_urls || []}
                 content={post.content}
-                SMImage="default_sm_image_url"
                 SMId={post.tag_name || "No Tag"}
                 event_id={post.event_id || "No Wallet Attached"}
-                userId={post.user._id === user._id}
+                userId={post.user._id === user?._id}
                 postId={post._id}
                 post={post}
                 refreshPosts={fetchPosts}
